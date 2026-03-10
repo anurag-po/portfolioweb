@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Anurag Puthiyaveetil Othayoth - Software Developer Portfolio">
+    <title>Anurag P.O. | Portfolio</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome Profiles & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#home" class="logo">
+                <span class="logo-text">Anurag</span><span class="logo-dot">.</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#projects" class="nav-link">Projects</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <button id="theme-toggle" class="theme-btn" aria-label="Toggle Dark Mode">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu" id="mobile-menu">
+        <button class="close-menu" id="close-menu"><i class="fa-solid fa-xmark"></i></button>
+        <ul class="mobile-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Home Section -->
+        <section id="home" class="hero-section">
+            <div class="hero-bg-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+
+            <div class="container hero-container reveal">
+                <div class="hero-content">
+                    <div class="badge">B.Tech CSE Student @ GCET</div>
+                    <h1 class="hero-title">
+                        Hi, I'm <span class="highlight">Anurag Puthiyaveetil Othayoth</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        I specialize in building robust, modern web applications and powerful desktop utilities.
+                        With a keen eye for sleek design and a strong foundation in technologies ranging from React and
+                        Vanilla JS to Python and Electron, I love turning complex problems into elegant, user-centric
+                        solutions.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#projects" class="btn btn-primary">View My Work</a>
+                        <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="projects-section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">Selected <span class="highlight">Projects</span></h2>
+                    <p class="section-desc">A curated list of my recent technical endeavors.</p>
+                </div>
+
+                <div class="projects-grid">
+                    <!-- Project 1: Nexlyra -->
+                    <div class="project-card reveal">
+                        <div class="project-content">
+                            <div class="project-meta">
+                                <span class="project-tag">Desktop App</span>
+                                <span class="project-tag">Electron</span>
+                                <span class="project-tag">Node.js</span>
+                            </div>
+                            <h3 class="project-title">Nexlyra Browser</h3>
+                            <p class="project-description">
+                                A keyboard-centric productivity browser designed to keep you in the flow. Instead of
+                                traditional tabs, it utilizes a "Command Palette" architecture powered by real-time
+                                heuristic intent detection that intelligently routes keystrokes (URL, Google search, or
+                                AI query) instantly. Features a frameless window design, secure IPC bridges, OS-level
+                                shortcut interception, and an immersive "Deep Dark" UI for unparalleled focus.
+                            </p>
+                            <div class="project-links">
+                                <a href="https://github.com/anurag-po/nexlyra-browser" target="_blank"
+                                    class="project-link" aria-label="View on GitHub">
+                                    <i class="fa-brands fa-github"></i> Source Code
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 2: Job Board Portal -->
+                    <div class="project-card reveal" style="transition-delay: 100ms;">
+                        <div class="project-content">
+                            <div class="project-meta">
+                                <span class="project-tag">Web App</span>
+                                <span class="project-tag">React</span>
+                                <span class="project-tag">Supabase</span>
+                                <span class="project-tag">TailwindCSS</span>
+                            </div>
+                            <h3 class="project-title">Job Board Portal</h3>
+                            <p class="project-description">
+                                A comprehensive employment platform tailored for seamless interactions between employers
+                                and candidates. Features role-based dashboards, secure Google OAuth authentication
+                                backed by Supabase, and dynamic profile cards. Implements advanced file-sharing
+                                functionalities enabling candidates to efficiently share resumes and resources with
+                                potential employers. Built for scalability and visual excellence.
+                            </p>
+                            <div class="project-links">
+                                <a href="https://codsoft-ivory.vercel.app" target="_blank" class="project-link"
+                                    aria-label="Live Preview">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Live Preview
+                                </a>
+                            </div>
+                            <small style="color: #ef4444; display: block; margin-top: 1rem; font-style: italic;">* Note:
+                                The website is currently paused, but a preview can be seen at the link.</small>
+                        </div>
+                    </div>
+
+                    <!-- Project 3: Home Optimization App -->
+                    <div class="project-card reveal" style="transition-delay: 200ms;">
+                        <div class="project-content">
+                            <div class="project-meta">
+                                <span class="project-tag">Python App</span>
+                                <span class="project-tag">Algorithms</span>
+                                <span class="project-tag">Data Analysis</span>
+                            </div>
+                            <h3 class="project-title">Space & Budget Optimizer</h3>
+                            <p class="project-description">
+                                An intelligent Python application designed to assist users in optimizing home furniture
+                                arrangements. It takes structural constraints (budget, home space dimensions) and
+                                computes the optimal combination of materials and dimensions for bookshelves or
+                                cabinets. It delivers real-time comparative analytics on pricing across different
+                                designs and materials to maximize utility and aesthetics.
+                            </p>
+                            <div class="project-links">
+                                <a href="#" class="project-link disabled" aria-label="Not available">
+                                    <i class="fa-solid fa-code"></i> Algorithm Showcase
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 4: Scientific Calculator -->
+                    <div class="project-card reveal" style="transition-delay: 300ms;">
+                        <div class="project-content">
+                            <div class="project-meta">
+                                <span class="project-tag">Desktop App</span>
+                                <span class="project-tag">Python</span>
+                                <span class="project-tag">PyQt</span>
+                                <span class="project-tag">SymPy</span>
+                            </div>
+                            <h3 class="project-title">Advanced Scientific Calculator</h3>
+                            <p class="project-description">
+                                A robust Python desktop application serving as an all-in-one computational suite. Moving
+                                far beyond basic arithmetic, it encompasses advanced mathematical capabilities including
+                                complex calculus problem-solving and rapid multi-dimensional matrix operations. Powered
+                                by a responsive PyQt GUI, and backed by robust symbolic and numerical computing
+                                libraries (SymPy, NumPy, Pandas).
+                            </p>
+                            <div class="project-links">
+                                <a href="#" class="project-link disabled" aria-label="Not available">
+                                    <i class="fa-solid fa-calculator"></i> View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="contact-section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">Let's <span class="highlight">Connect</span></h2>
+                    <p class="section-desc">Have a question or want to work together? Feel free to reach out!</p>
+                </div>
+
+                <div class="contact-content reveal">
+                    <div class="contact-info">
+                        <div class="info-card">
+                            <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
+                            <div class="info-details">
+                                <h4>Email Me</h4>
+                                <a href="mailto:anuragpo393@gmail.com">anuragpo393@gmail.com</a>
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
+                            <div class="info-details">
+                                <h4>Call Me</h4>
+                                <a href="tel:+917863086776">+91 7863 086 776</a>
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-icon"><i class="fa-brands fa-github"></i></div>
+                            <div class="info-details">
+                                <h4>GitHub Profile</h4>
+                                <a href="https://github.com/anurag-po" target="_blank">github.com/anurag-po</a>
+                            </div>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-icon"><i class="fa-brands fa-linkedin"></i></div>
+                            <div class="info-details">
+                                <h4>LinkedIn</h4>
+                                <a href="https://linkedin.com/in/anurag-po"
+                                    target="_blank">linkedin.com/in/anurag-po</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email</label>
+                            <input type="email" id="email" name="email" required placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" required
+                                placeholder="Hello, I'd like to talk about..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary submit-btn">
+                            Send Message <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-logo">
+                Anurag<span class="logo-dot">.</span>
+            </div>
+            <div class="footer-socials">
+                <a href="https://github.com/anurag-po" target="_blank" aria-label="GitHub"><i
+                        class="fa-brands fa-github"></i></a>
+                <a href="https://linkedin.com/in/anurag-po" target="_blank" aria-label="LinkedIn"><i
+                        class="fa-brands fa-linkedin"></i></a>
+                <a href="mailto:anuragpo393@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+            <div class="footer-copy">
+                &copy; 2026 Anurag Puthiyaveetil Othayoth. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
