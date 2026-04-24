@@ -147,7 +147,7 @@
             font-size: 3rem;
         }
 
-        /* === MASK REVEAL COMPONENT (Vanilla Implementation of Framer Component) === */
+        /* === MASK REVEAL COMPONENT === */
         .mask-card {
             position: relative;
             background: #fff;
@@ -161,7 +161,7 @@
         .mask-card:hover {
             transform: translate(-4px, -4px);
             box-shadow: 12px 12px 0px var(--red-glow);
-            --mask-size: 400px; /* Expands on hover like hoverSize */
+            --mask-size: 400px; /* Expands on hover */
         }
 
         /* The Base Layer */
@@ -177,7 +177,7 @@
             justify-content: center;
         }
 
-        /* The Reveal Layer (Hidden by default, shown by mask) */
+        /* The Reveal Layer */
         .reveal-layer {
             position: absolute;
             inset: 0;
@@ -185,29 +185,26 @@
             padding: 3rem;
             background: var(--red);
             color: #ffffff;
-            pointer-events: none; /* Let mouse pass through to base layer */
+            pointer-events: none; 
             display: flex;
             flex-direction: column;
             justify-content: center;
             
-            /* The Core Mask Logic */
             -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="black"/></svg>');
             mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="black"/></svg>');
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
             
-            /* Tie CSS Custom Properties to Mask attributes */
             -webkit-mask-size: var(--mask-size) var(--mask-size);
             mask-size: var(--mask-size) var(--mask-size);
             -webkit-mask-position: calc(var(--mask-x) - (var(--mask-size) / 2)) calc(var(--mask-y) - (var(--mask-size) / 2));
             mask-position: calc(var(--mask-x) - (var(--mask-size) / 2)) calc(var(--mask-y) - (var(--mask-size) / 2));
             
-            /* backOut easing transition for the size scaling */
             transition: mask-size 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
                         -webkit-mask-size 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Override specific text colors inside the reveal layer */
+        /* Reveal Layer Text Override */
         .reveal-layer .highlight { color: #000000; }
         .reveal-layer .btn { border-color: #fff; color: #fff; }
         .reveal-layer .project-tag { background: rgba(255,255,255,0.2); border-color: #fff; color: #fff; }
@@ -246,13 +243,12 @@
             font-weight: 400;
         }
 
+        /* Hero Image - Shared Styles */
         .hero-image-wrapper {
             position: relative;
             width: 100%;
             aspect-ratio: 4/5;
             background: #fff;
-            border: 4px solid var(--red);
-            box-shadow: -15px 15px 0px var(--text);
             overflow: hidden;
         }
 
@@ -260,12 +256,18 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: grayscale(100%) contrast(120%);
-            transition: filter 0.3s ease;
         }
 
-        .mask-card:hover .hero-image-wrapper img {
-            filter: grayscale(0%) contrast(100%);
+        /* Base Layer: Red Frame before reveal */
+        .base-layer .hero-image-wrapper {
+            border: 4px solid var(--red);
+            box-shadow: -15px 15px 0px var(--red);
+        }
+
+        /* Reveal Layer: Black Frame inside the spotlight mask */
+        .reveal-layer .hero-image-wrapper {
+            border: 4px solid #000000;
+            box-shadow: -15px 15px 0px #000000;
         }
 
         /* Buttons */
@@ -594,31 +596,27 @@
             const maskCards = document.querySelectorAll('.mask-card[data-mask="true"]');
 
             maskCards.forEach(card => {
-                // 1. Extract the HTML from the template div
                 const template = card.querySelector('.card-content-template');
                 const contentHTML = template.innerHTML;
 
-                // 2. Clear the card and inject the dual-layer structure required for the effect
+                // Inject the dual-layer structure required for the effect
                 card.innerHTML = `
                     <div class="base-layer">${contentHTML}</div>
                     <div class="reveal-layer" aria-hidden="true">${contentHTML}</div>
                 `;
 
-                // 3. Attach Mouse Tracking for this specific card
+                // Attach Mouse Tracking
                 card.addEventListener('mousemove', (e) => {
-                    // Get mouse position relative to the specific card
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
 
-                    // Update CSS Variables to move the mask
                     card.style.setProperty('--mask-x', `${x}px`);
                     card.style.setProperty('--mask-y', `${y}px`);
                 });
 
-                // Optional: Reset position when leaving so it doesn't stay stuck on the edge
+                // Reset position when leaving
                 card.addEventListener('mouseleave', () => {
-                    // Moving it far away hides it gracefully as it shrinks
                     card.style.setProperty('--mask-x', `-1000px`);
                     card.style.setProperty('--mask-y', `-1000px`);
                 });
