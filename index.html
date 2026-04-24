@@ -1,289 +1,629 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Anurag Puthiyaveetil Othayoth - Software Developer Portfolio">
     <title>Anurag P.O. | Portfolio</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Fira+Code:wght@400;500&display=swap"
-        rel="stylesheet">
-
-    <!-- FontAwesome Profiles & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* === VARIABLES & THEME === */
+        :root {
+            --bg: #ffffff;
+            --text: #050505;
+            --red: #df0024;
+            --red-glow: rgba(223, 0, 36, 0.15);
+            --font-main: 'Space Grotesk', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+            --grid-color: rgba(0, 0, 0, 0.04);
+            
+            /* Mask Effect Variables Defaults */
+            --mask-size: 40px;
+            --mask-x: -100px;
+            --mask-y: -100px;
+        }
+
+        /* === RESET & BASE === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Sci-Fi Grid Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: 
+                linear-gradient(to right, var(--grid-color) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        ::selection {
+            background: var(--red);
+            color: #fff;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* === TYPOGRAPHY === */
+        h1, h2, h3, h4 {
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .highlight {
+            color: var(--red);
+        }
+
+        .mono {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* === NAVIGATION === */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.5rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--text);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--red);
+        }
+
+        /* === LAYOUT & SECTIONS === */
+        .section-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 120px 5% 60px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+            border-left: 4px solid var(--red);
+            padding-left: 1rem;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+        }
+
+        /* === MASK REVEAL COMPONENT (Vanilla Implementation of Framer Component) === */
+        .mask-card {
+            position: relative;
+            background: #fff;
+            border: 2px solid var(--text);
+            overflow: hidden;
+            cursor: default;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .mask-card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: 12px 12px 0px var(--red-glow);
+            --mask-size: 400px; /* Expands on hover like hoverSize */
+        }
+
+        /* The Base Layer */
+        .base-layer {
+            position: relative;
+            z-index: 1;
+            padding: 3rem;
+            background: var(--bg);
+            color: var(--text);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* The Reveal Layer (Hidden by default, shown by mask) */
+        .reveal-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            padding: 3rem;
+            background: var(--red);
+            color: #ffffff;
+            pointer-events: none; /* Let mouse pass through to base layer */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            
+            /* The Core Mask Logic */
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="black"/></svg>');
+            mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="black"/></svg>');
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            
+            /* Tie CSS Custom Properties to Mask attributes */
+            -webkit-mask-size: var(--mask-size) var(--mask-size);
+            mask-size: var(--mask-size) var(--mask-size);
+            -webkit-mask-position: calc(var(--mask-x) - (var(--mask-size) / 2)) calc(var(--mask-y) - (var(--mask-size) / 2));
+            mask-position: calc(var(--mask-x) - (var(--mask-size) / 2)) calc(var(--mask-y) - (var(--mask-size) / 2));
+            
+            /* backOut easing transition for the size scaling */
+            transition: mask-size 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        -webkit-mask-size 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Override specific text colors inside the reveal layer */
+        .reveal-layer .highlight { color: #000000; }
+        .reveal-layer .btn { border-color: #fff; color: #fff; }
+        .reveal-layer .project-tag { background: rgba(255,255,255,0.2); border-color: #fff; color: #fff; }
+        .reveal-layer .project-link { color: #fff; }
+        .reveal-layer p { color: rgba(255, 255, 255, 0.9); }
+
+        /* === HERO SECTION === */
+        #home .mask-card {
+            min-height: 75vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            gap: 4rem;
+            padding: 0;
+        }
+
+        #home .base-layer, #home .reveal-layer {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .hero-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .hero-title {
+            font-size: 4.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+
+        .hero-image-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4/5;
+            background: #fff;
+            border: 4px solid var(--red);
+            box-shadow: -15px 15px 0px var(--text);
+            overflow: hidden;
+        }
+
+        .hero-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%) contrast(120%);
+            transition: filter 0.3s ease;
+        }
+
+        .mask-card:hover .hero-image-wrapper img {
+            filter: grayscale(0%) contrast(100%);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            text-transform: uppercase;
+            border: 2px solid var(--text);
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 0%;
+            background: var(--text);
+            transition: height 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::after { height: 100%; }
+        .btn:hover { color: #fff; }
+
+        .btn-primary {
+            background: var(--red);
+            color: #fff;
+            border-color: var(--red);
+        }
+        .btn-primary::after { background: #000; }
+
+        /* === PROJECTS SECTION === */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-tag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border: 1px solid var(--text);
+            border-radius: 50px;
+        }
+
+        .project-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-links {
+            margin-top: 2rem;
+            font-family: var(--font-mono);
+            font-weight: 600;
+        }
+
+        .project-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 0.2rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .project-links a:hover {
+            border-color: var(--red);
+        }
+
+        /* === CONTACT SECTION === */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 4rem;
+        }
+
+        .contact-info-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .info-item i {
+            font-size: 1.5rem;
+            color: var(--red);
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            border: 2px solid var(--text);
+            font-family: var(--font-mono);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--red);
+        }
+
+        /* === FOOTER === */
+        footer {
+            border-top: 2px solid var(--text);
+            padding: 2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            background: #fff;
+        }
+
+        @media (max-width: 900px) {
+            #home .base-layer, #home .reveal-layer {
+                grid-template-columns: 1fr;
+            }
+            .hero-title { font-size: 3rem; }
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
-
 <body>
-    <!-- Navbar -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <a href="#home" class="logo">
-                <span class="logo-text">Anurag</span><span class="logo-dot">.</span>
-            </a>
 
-            <ul class="nav-links">
-                <li><a href="#home" class="nav-link">Home</a></li>
-                <li><a href="#projects" class="nav-link">Projects</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
-            </ul>
-
-            <div class="nav-actions">
-                <button id="theme-toggle" class="theme-btn" aria-label="Toggle Dark Mode">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
-            </div>
-
-            <div class="hamburger" id="hamburger">
-                <i class="fa-solid fa-bars"></i>
-            </div>
-        </div>
+    <nav>
+        <div class="logo">Anurag<span class="highlight">.</span></div>
+        <ul class="nav-links mono">
+            <li><a href="#home">[ Home ]</a></li>
+            <li><a href="#projects">[ Projects ]</a></li>
+            <li><a href="#contact">[ Contact ]</a></li>
+        </ul>
     </nav>
 
-    <!-- Mobile Menu Overlay -->
-    <div class="mobile-menu" id="mobile-menu">
-        <button class="close-menu" id="close-menu"><i class="fa-solid fa-xmark"></i></button>
-        <ul class="mobile-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact</a></li>
-        </ul>
-    </div>
-
-    <!-- Main Content -->
     <main>
-        <!-- Home Section -->
-        <section id="home" class="hero-section">
-            <div class="hero-bg-shapes">
-                <div class="shape shape-1"></div>
-                <div class="shape shape-2"></div>
-                <div class="shape shape-3"></div>
-            </div>
-
-            <div class="container hero-container reveal">
-                <div class="hero-content">
-                    <div class="badge">B.Tech CSE Student @ GCET</div>
-                    <h1 class="hero-title">
-                        Hi, I'm <span class="highlight">Anurag Puthiyaveetil Othayoth</span>
-                    </h1>
-                    <p class="hero-subtitle">
-                        I specialize in building robust, modern web applications and powerful desktop utilities.
-                        With a keen eye for sleek design and a strong foundation in technologies ranging from React and
-                        Vanilla JS to Python and Electron, I love turning complex problems into elegant, user-centric
-                        solutions.
-                    </p>
-                    <div class="hero-actions">
-                        <a href="#projects" class="btn btn-primary">View My Work</a>
-                        <a href="#contact" class="btn btn-secondary">Get In Touch</a>
+        <section id="home" class="section-container">
+            <div class="mask-card" data-mask="true">
+                <div class="card-content-template" style="display: none;">
+                    <div class="hero-text">
+                        <div class="mono highlight">> B.Tech CSE Student @ GCET</div>
+                        <h1 class="hero-title">Hi, I'm <br><span class="highlight">Anurag Puthiyaveetil</span></h1>
+                        <p class="hero-subtitle">
+                            I specialize in building robust, modern web applications and powerful desktop utilities. With a keen eye for sleek design and a strong foundation in technologies ranging from React and Vanilla JS to Python and Electron, I love turning complex problems into elegant, user-centric solutions.
+                        </p>
+                        <div class="btn-group">
+                            <a href="#projects" class="btn btn-primary">View My Work</a>
+                            <a href="#contact" class="btn">Get In Touch</a>
+                        </div>
+                    </div>
+                    <div class="hero-image-wrapper">
+                        <img src="image.jpg" alt="Anurag P.O.">
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Projects Section -->
-        <section id="projects" class="projects-section">
-            <div class="container">
-                <div class="section-header reveal">
-                    <h2 class="section-title">Selected <span class="highlight">Projects</span></h2>
-                    <p class="section-desc">A curated list of my recent technical endeavors.</p>
+        <section id="projects" class="section-container">
+            <div class="section-header">
+                <h2>Selected <span class="highlight">Projects</span></h2>
+                <p class="mono">> SYSTEM.QUERY(RECENT_WORKS)</p>
+            </div>
+
+            <div class="projects-grid">
+                <div class="mask-card" data-mask="true">
+                    <div class="card-content-template" style="display: none;">
+                        <div class="project-meta">
+                            <span class="project-tag">Desktop App</span>
+                            <span class="project-tag">Electron</span>
+                            <span class="project-tag">Node.js</span>
+                        </div>
+                        <h3 class="project-title">Nexlyra Browser</h3>
+                        <p>A keyboard-centric productivity browser designed to keep you in the flow. Instead of traditional tabs, it utilizes a "Command Palette" architecture powered by real-time heuristic intent detection that intelligently routes keystrokes instantly. Features a frameless window design, secure IPC bridges, OS-level shortcut interception, and an immersive "Deep Dark" UI.</p>
+                        <div class="project-links">
+                            <a href="https://github.com/anurag-po/nexlyra-browser" target="_blank"><i class="fa-brands fa-github"></i> Source Code</a>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="projects-grid">
-                    <!-- Project 1: Nexlyra -->
-                    <div class="project-card reveal">
-                        <div class="project-content">
-                            <div class="project-meta">
-                                <span class="project-tag">Desktop App</span>
-                                <span class="project-tag">Electron</span>
-                                <span class="project-tag">Node.js</span>
-                            </div>
-                            <h3 class="project-title">Nexlyra Browser</h3>
-                            <p class="project-description">
-                                A keyboard-centric productivity browser designed to keep you in the flow. Instead of
-                                traditional tabs, it utilizes a "Command Palette" architecture powered by real-time
-                                heuristic intent detection that intelligently routes keystrokes (URL, Google search, or
-                                AI query) instantly. Features a frameless window design, secure IPC bridges, OS-level
-                                shortcut interception, and an immersive "Deep Dark" UI for unparalleled focus.
-                            </p>
-                            <div class="project-links">
-                                <a href="https://github.com/anurag-po/nexlyra-browser" target="_blank"
-                                    class="project-link" aria-label="View on GitHub">
-                                    <i class="fa-brands fa-github"></i> Source Code
-                                </a>
-                            </div>
+                <div class="mask-card" data-mask="true">
+                    <div class="card-content-template" style="display: none;">
+                        <div class="project-meta">
+                            <span class="project-tag">Web App</span>
+                            <span class="project-tag">React</span>
+                            <span class="project-tag">Supabase</span>
+                            <span class="project-tag">TailwindCSS</span>
+                        </div>
+                        <h3 class="project-title">Job Board Portal</h3>
+                        <p>A comprehensive employment platform tailored for seamless interactions between employers and candidates. Features role-based dashboards, secure Google OAuth authentication backed by Supabase, and dynamic profile cards. Implements advanced file-sharing functionalities enabling candidates to efficiently share resources.</p>
+                        <div class="project-links">
+                            <a href="https://codsoft-ivory.vercel.app" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live Preview</a>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Project 2: Job Board Portal -->
-                    <div class="project-card reveal" style="transition-delay: 100ms;">
-                        <div class="project-content">
-                            <div class="project-meta">
-                                <span class="project-tag">Web App</span>
-                                <span class="project-tag">React</span>
-                                <span class="project-tag">Supabase</span>
-                                <span class="project-tag">TailwindCSS</span>
-                            </div>
-                            <h3 class="project-title">Job Board Portal</h3>
-                            <p class="project-description">
-                                A comprehensive employment platform tailored for seamless interactions between employers
-                                and candidates. Features role-based dashboards, secure Google OAuth authentication
-                                backed by Supabase, and dynamic profile cards. Implements advanced file-sharing
-                                functionalities enabling candidates to efficiently share resumes and resources with
-                                potential employers. Built for scalability and visual excellence.
-                            </p>
-                            <div class="project-links">
-                                <a href="https://codsoft-ivory.vercel.app" target="_blank" class="project-link"
-                                    aria-label="Live Preview">
-                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Live Preview
-                                </a>
-                            </div>
-                            <small style="color: #ef4444; display: block; margin-top: 1rem; font-style: italic;">* Note:
-                                The website is currently paused, but a preview can be seen at the link.</small>
+                <div class="mask-card" data-mask="true">
+                    <div class="card-content-template" style="display: none;">
+                        <div class="project-meta">
+                            <span class="project-tag">Python App</span>
+                            <span class="project-tag">Algorithms</span>
+                            <span class="project-tag">Data Analysis</span>
+                        </div>
+                        <h3 class="project-title">Space & Budget Optimizer</h3>
+                        <p>An intelligent Python application designed to assist users in optimizing home furniture arrangements. It takes structural constraints and computes the optimal combination of materials and dimensions for bookshelves or cabinets. It delivers real-time comparative analytics on pricing across different designs to maximize utility.</p>
+                        <div class="project-links">
+                            <a href="#"><i class="fa-solid fa-code"></i> Algorithm Showcase</a>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Project 3: Home Optimization App -->
-                    <div class="project-card reveal" style="transition-delay: 200ms;">
-                        <div class="project-content">
-                            <div class="project-meta">
-                                <span class="project-tag">Python App</span>
-                                <span class="project-tag">Algorithms</span>
-                                <span class="project-tag">Data Analysis</span>
-                            </div>
-                            <h3 class="project-title">Space & Budget Optimizer</h3>
-                            <p class="project-description">
-                                An intelligent Python application designed to assist users in optimizing home furniture
-                                arrangements. It takes structural constraints (budget, home space dimensions) and
-                                computes the optimal combination of materials and dimensions for bookshelves or
-                                cabinets. It delivers real-time comparative analytics on pricing across different
-                                designs and materials to maximize utility and aesthetics.
-                            </p>
-                            <div class="project-links">
-                                <a href="#" class="project-link disabled" aria-label="Not available">
-                                    <i class="fa-solid fa-code"></i> Algorithm Showcase
-                                </a>
-                            </div>
+                <div class="mask-card" data-mask="true">
+                    <div class="card-content-template" style="display: none;">
+                        <div class="project-meta">
+                            <span class="project-tag">Desktop App</span>
+                            <span class="project-tag">Python</span>
+                            <span class="project-tag">PyQt</span>
+                            <span class="project-tag">SymPy</span>
                         </div>
-                    </div>
-
-                    <!-- Project 4: Scientific Calculator -->
-                    <div class="project-card reveal" style="transition-delay: 300ms;">
-                        <div class="project-content">
-                            <div class="project-meta">
-                                <span class="project-tag">Desktop App</span>
-                                <span class="project-tag">Python</span>
-                                <span class="project-tag">PyQt</span>
-                                <span class="project-tag">SymPy</span>
-                            </div>
-                            <h3 class="project-title">Advanced Scientific Calculator</h3>
-                            <p class="project-description">
-                                A robust Python desktop application serving as an all-in-one computational suite. Moving
-                                far beyond basic arithmetic, it encompasses advanced mathematical capabilities including
-                                complex calculus problem-solving and rapid multi-dimensional matrix operations. Powered
-                                by a responsive PyQt GUI, and backed by robust symbolic and numerical computing
-                                libraries (SymPy, NumPy, Pandas).
-                            </p>
-                            <div class="project-links">
-                                <a href="#" class="project-link disabled" aria-label="Not available">
-                                    <i class="fa-solid fa-calculator"></i> View Details
-                                </a>
-                            </div>
+                        <h3 class="project-title">Scientific Calculator</h3>
+                        <p>A robust Python desktop application serving as an all-in-one computational suite. Moving far beyond basic arithmetic, it encompasses advanced mathematical capabilities including complex calculus problem-solving and rapid multi-dimensional matrix operations. Powered by a responsive PyQt GUI and robust symbolic computing libraries.</p>
+                        <div class="project-links">
+                            <a href="#"><i class="fa-solid fa-calculator"></i> View Details</a>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Contact Section -->
-        <section id="contact" class="contact-section">
-            <div class="container">
-                <div class="section-header reveal">
-                    <h2 class="section-title">Let's <span class="highlight">Connect</span></h2>
-                    <p class="section-desc">Have a question or want to work together? Feel free to reach out!</p>
-                </div>
+        <section id="contact" class="section-container">
+            <div class="section-header">
+                <h2>Let's <span class="highlight">Connect</span></h2>
+                <p class="mono">> INIT_COMMUNICATION_PROTOCOL()</p>
+            </div>
 
-                <div class="contact-content reveal">
-                    <div class="contact-info">
-                        <div class="info-card">
-                            <div class="info-icon"><i class="fa-solid fa-envelope"></i></div>
-                            <div class="info-details">
-                                <h4>Email Me</h4>
-                                <a href="mailto:anuragpo393@gmail.com">anuragpo393@gmail.com</a>
+            <div class="mask-card" data-mask="true">
+                <div class="card-content-template" style="display: none;">
+                    <div class="contact-grid">
+                        <div class="contact-info-wrap">
+                            <div class="info-item">
+                                <i class="fa-solid fa-envelope"></i>
+                                <div>
+                                    <div class="mono">EMAIL_ADDRESS</div>
+                                    <a href="mailto:anuragpo393@gmail.com">anuragpo393@gmail.com</a>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fa-solid fa-phone"></i>
+                                <div>
+                                    <div class="mono">SECURE_LINE</div>
+                                    <a href="tel:+917863086776">+91 7863 086 776</a>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fa-brands fa-github"></i>
+                                <div>
+                                    <div class="mono">GIT_REPOSITORY</div>
+                                    <a href="https://github.com/anurag-po" target="_blank">github.com/anurag-po</a>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fa-brands fa-linkedin"></i>
+                                <div>
+                                    <div class="mono">PROFESSIONAL_NETWORK</div>
+                                    <a href="https://linkedin.com/in/anurag-po" target="_blank">linkedin.com/in/anurag-po</a>
+                                </div>
                             </div>
                         </div>
-                        <div class="info-card">
-                            <div class="info-icon"><i class="fa-solid fa-phone"></i></div>
-                            <div class="info-details">
-                                <h4>Call Me</h4>
-                                <a href="tel:+917863086776">+91 7863 086 776</a>
+
+                        <form class="contact-form" onsubmit="event.preventDefault();">
+                            <div class="form-group">
+                                <input type="text" placeholder="[ ENTER_NAME ]" required>
                             </div>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-icon"><i class="fa-brands fa-github"></i></div>
-                            <div class="info-details">
-                                <h4>GitHub Profile</h4>
-                                <a href="https://github.com/anurag-po" target="_blank">github.com/anurag-po</a>
+                            <div class="form-group">
+                                <input type="email" placeholder="[ ENTER_EMAIL ]" required>
                             </div>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-icon"><i class="fa-brands fa-linkedin"></i></div>
-                            <div class="info-details">
-                                <h4>LinkedIn</h4>
-                                <a href="https://linkedin.com/in/anurag-po"
-                                    target="_blank">linkedin.com/in/anurag-po</a>
+                            <div class="form-group">
+                                <textarea rows="5" placeholder="[ ENTER_TRANSMISSION_DATA ]" required></textarea>
                             </div>
-                        </div>
+                            <button type="submit" class="btn btn-primary">Transmit Signal</button>
+                        </form>
                     </div>
-
-                    <form class="contact-form" id="contactForm">
-                        <div class="form-group">
-                            <label for="name">Your Name</label>
-                            <input type="text" id="name" name="name" required placeholder="John Doe">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Your Email</label>
-                            <input type="email" id="email" name="email" required placeholder="john@example.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="5" required
-                                placeholder="Hello, I'd like to talk about..."></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary submit-btn">
-                            Send Message <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                    </form>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container footer-container">
-            <div class="footer-logo">
-                Anurag<span class="logo-dot">.</span>
-            </div>
-            <div class="footer-socials">
-                <a href="https://github.com/anurag-po" target="_blank" aria-label="GitHub"><i
-                        class="fa-brands fa-github"></i></a>
-                <a href="https://linkedin.com/in/anurag-po" target="_blank" aria-label="LinkedIn"><i
-                        class="fa-brands fa-linkedin"></i></a>
-                <a href="mailto:anuragpo393@gmail.com" aria-label="Email"><i class="fa-solid fa-envelope"></i></a>
-            </div>
-            <div class="footer-copy">
-                &copy; 2026 Anurag Puthiyaveetil Othayoth. All rights reserved.
-            </div>
-        </div>
+    <footer>
+        <div class="logo">Anurag<span class="highlight">.</span></div>
+        <div class="mono">© 2026 SYS. ALL RIGHTS RESERVED.</div>
     </footer>
 
-    <script src="js/script.js"></script>
-</body>
+    <script>
+        // === MASK REVEAL EFFECT INITIALIZATION ===
+        document.addEventListener('DOMContentLoaded', () => {
+            const maskCards = document.querySelectorAll('.mask-card[data-mask="true"]');
 
+            maskCards.forEach(card => {
+                // 1. Extract the HTML from the template div
+                const template = card.querySelector('.card-content-template');
+                const contentHTML = template.innerHTML;
+
+                // 2. Clear the card and inject the dual-layer structure required for the effect
+                card.innerHTML = `
+                    <div class="base-layer">${contentHTML}</div>
+                    <div class="reveal-layer" aria-hidden="true">${contentHTML}</div>
+                `;
+
+                // 3. Attach Mouse Tracking for this specific card
+                card.addEventListener('mousemove', (e) => {
+                    // Get mouse position relative to the specific card
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+
+                    // Update CSS Variables to move the mask
+                    card.style.setProperty('--mask-x', `${x}px`);
+                    card.style.setProperty('--mask-y', `${y}px`);
+                });
+
+                // Optional: Reset position when leaving so it doesn't stay stuck on the edge
+                card.addEventListener('mouseleave', () => {
+                    // Moving it far away hides it gracefully as it shrinks
+                    card.style.setProperty('--mask-x', `-1000px`);
+                    card.style.setProperty('--mask-y', `-1000px`);
+                });
+            });
+        });
+    </script>
+</body>
 </html>
