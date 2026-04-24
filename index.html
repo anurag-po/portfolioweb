@@ -22,11 +22,6 @@
             --font-main: 'Space Grotesk', sans-serif;
             --font-mono: 'Fira Code', monospace;
             --grid-color: rgba(0, 0, 0, 0.04);
-            
-            /* Mask Effect Variables Defaults */
-            --mask-size: 40px;
-            --mask-x: -100px;
-            --mask-y: -100px;
         }
 
         /* === RESET & BASE === */
@@ -156,6 +151,11 @@
             cursor: default;
             box-shadow: 8px 8px 0px rgba(0,0,0,0.1);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            
+            /* CSS Variables controlled by JS */
+            --mask-size: 40px;
+            --mask-x: -100px;
+            --mask-y: -100px;
         }
 
         .mask-card:hover {
@@ -164,7 +164,7 @@
             --mask-size: 400px; /* Expands on hover */
         }
 
-        /* The Base Layer */
+        /* The Base Layer - Natively visible */
         .base-layer {
             position: relative;
             z-index: 1;
@@ -177,51 +177,51 @@
             justify-content: center;
         }
 
-        /* The Reveal Layer */
+        /* The Reveal Layer - Cloned by JS and masked */
         .reveal-layer {
             position: absolute;
-            inset: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             z-index: 2;
             padding: 3rem;
             background: var(--red);
             color: #ffffff;
-            pointer-events: none; 
+            pointer-events: none; /* Let mouse interact with base layer underneath */
             display: flex;
             flex-direction: column;
             justify-content: center;
             
-            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="black"/></svg>');
-            mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="black"/></svg>');
+            /* Safe Base64 SVG implementation for mask */
+            -webkit-mask-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOUQ5RDkiLz4KPC9zdmc+Cg==');
+            mask-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOUQ5RDkiLz4KPC9zdmc+Cg==');
+            
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
             
             -webkit-mask-size: var(--mask-size) var(--mask-size);
             mask-size: var(--mask-size) var(--mask-size);
+            
             -webkit-mask-position: calc(var(--mask-x) - (var(--mask-size) / 2)) calc(var(--mask-y) - (var(--mask-size) / 2));
             mask-position: calc(var(--mask-x) - (var(--mask-size) / 2)) calc(var(--mask-y) - (var(--mask-size) / 2));
             
+            /* Smooth easing matching Framer Motion's "backOut" transition feeling */
             transition: mask-size 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
                         -webkit-mask-size 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Reveal Layer Text Override */
+        /* Override specific styles inside the reveal spotlight */
         .reveal-layer .highlight { color: #000000; }
         .reveal-layer .btn { border-color: #fff; color: #fff; }
         .reveal-layer .project-tag { background: rgba(255,255,255,0.2); border-color: #fff; color: #fff; }
         .reveal-layer .project-link { color: #fff; }
         .reveal-layer p { color: rgba(255, 255, 255, 0.9); }
 
-        /* === HERO SECTION === */
+        /* === HERO SECTION OVERRIDES === */
         #home .mask-card {
-            min-height: 75vh;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            align-items: center;
-            gap: 4rem;
             padding: 0;
         }
 
-        #home .base-layer, #home .reveal-layer {
+        .base-layer.hero-layout, .reveal-layer.hero-layout {
+            min-height: 75vh;
             display: grid;
             grid-template-columns: 1.2fr 0.8fr;
             align-items: center;
@@ -234,16 +234,10 @@
             gap: 1.5rem;
         }
 
-        .hero-title {
-            font-size: 4.5rem;
-        }
+        .hero-title { font-size: 4.5rem; }
+        .hero-subtitle { font-size: 1.2rem; font-weight: 400; }
 
-        .hero-subtitle {
-            font-size: 1.2rem;
-            font-weight: 400;
-        }
-
-        /* Hero Image - Shared Styles */
+        /* Hero Image Layout */
         .hero-image-wrapper {
             position: relative;
             width: 100%;
@@ -258,13 +252,12 @@
             object-fit: cover;
         }
 
-        /* Base Layer: Red Frame before reveal */
+        /* FRAME LOGIC: Red on Base, Black on Reveal */
         .base-layer .hero-image-wrapper {
             border: 4px solid var(--red);
             box-shadow: -15px 15px 0px var(--red);
         }
 
-        /* Reveal Layer: Black Frame inside the spotlight mask */
         .reveal-layer .hero-image-wrapper {
             border: 4px solid #000000;
             box-shadow: -15px 15px 0px #000000;
@@ -332,16 +325,8 @@
             border-radius: 50px;
         }
 
-        .project-title {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .project-links {
-            margin-top: 2rem;
-            font-family: var(--font-mono);
-            font-weight: 600;
-        }
+        .project-title { font-size: 2rem; margin-bottom: 1rem; }
+        .project-links { margin-top: 2rem; font-family: var(--font-mono); font-weight: 600; }
 
         .project-links a {
             display: inline-flex;
@@ -352,9 +337,7 @@
             transition: border-color 0.3s ease;
         }
 
-        .project-links a:hover {
-            border-color: var(--red);
-        }
+        .project-links a:hover { border-color: var(--red); }
 
         /* === CONTACT SECTION === */
         .contact-grid {
@@ -377,10 +360,7 @@
             font-weight: 600;
         }
 
-        .info-item i {
-            font-size: 1.5rem;
-            color: var(--red);
-        }
+        .info-item i { font-size: 1.5rem; color: var(--red); }
 
         .contact-form {
             display: flex;
@@ -399,9 +379,7 @@
             transition: border-color 0.3s ease;
         }
 
-        .form-group input:focus, .form-group textarea:focus {
-            border-color: var(--red);
-        }
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--red); }
 
         /* === FOOTER === */
         footer {
@@ -415,9 +393,7 @@
         }
 
         @media (max-width: 900px) {
-            #home .base-layer, #home .reveal-layer {
-                grid-template-columns: 1fr;
-            }
+            .base-layer.hero-layout, .reveal-layer.hero-layout { grid-template-columns: 1fr; gap: 2rem; }
             .hero-title { font-size: 3rem; }
             .contact-grid { grid-template-columns: 1fr; }
         }
@@ -436,8 +412,8 @@
 
     <main>
         <section id="home" class="section-container">
-            <div class="mask-card" data-mask="true">
-                <div class="card-content-template" style="display: none;">
+            <div class="mask-card">
+                <div class="base-layer hero-layout">
                     <div class="hero-text">
                         <div class="mono highlight">> B.Tech CSE Student @ GCET</div>
                         <h1 class="hero-title">Hi, I'm <br><span class="highlight">Anurag Puthiyaveetil</span></h1>
@@ -463,8 +439,8 @@
             </div>
 
             <div class="projects-grid">
-                <div class="mask-card" data-mask="true">
-                    <div class="card-content-template" style="display: none;">
+                <div class="mask-card">
+                    <div class="base-layer">
                         <div class="project-meta">
                             <span class="project-tag">Desktop App</span>
                             <span class="project-tag">Electron</span>
@@ -478,8 +454,8 @@
                     </div>
                 </div>
 
-                <div class="mask-card" data-mask="true">
-                    <div class="card-content-template" style="display: none;">
+                <div class="mask-card">
+                    <div class="base-layer">
                         <div class="project-meta">
                             <span class="project-tag">Web App</span>
                             <span class="project-tag">React</span>
@@ -494,8 +470,8 @@
                     </div>
                 </div>
 
-                <div class="mask-card" data-mask="true">
-                    <div class="card-content-template" style="display: none;">
+                <div class="mask-card">
+                    <div class="base-layer">
                         <div class="project-meta">
                             <span class="project-tag">Python App</span>
                             <span class="project-tag">Algorithms</span>
@@ -509,8 +485,8 @@
                     </div>
                 </div>
 
-                <div class="mask-card" data-mask="true">
-                    <div class="card-content-template" style="display: none;">
+                <div class="mask-card">
+                    <div class="base-layer">
                         <div class="project-meta">
                             <span class="project-tag">Desktop App</span>
                             <span class="project-tag">Python</span>
@@ -533,8 +509,8 @@
                 <p class="mono">> INIT_COMMUNICATION_PROTOCOL()</p>
             </div>
 
-            <div class="mask-card" data-mask="true">
-                <div class="card-content-template" style="display: none;">
+            <div class="mask-card">
+                <div class="base-layer">
                     <div class="contact-grid">
                         <div class="contact-info-wrap">
                             <div class="info-item">
@@ -591,21 +567,23 @@
     </footer>
 
     <script>
-        // === MASK REVEAL EFFECT INITIALIZATION ===
         document.addEventListener('DOMContentLoaded', () => {
-            const maskCards = document.querySelectorAll('.mask-card[data-mask="true"]');
+            const maskCards = document.querySelectorAll('.mask-card');
 
             maskCards.forEach(card => {
-                const template = card.querySelector('.card-content-template');
-                const contentHTML = template.innerHTML;
+                const baseLayer = card.querySelector('.base-layer');
+                if (!baseLayer) return;
 
-                // Inject the dual-layer structure required for the effect
-                card.innerHTML = `
-                    <div class="base-layer">${contentHTML}</div>
-                    <div class="reveal-layer" aria-hidden="true">${contentHTML}</div>
-                `;
+                // 1. Safely clone the base layer to create the reveal layer
+                const revealLayer = document.createElement('div');
+                revealLayer.className = baseLayer.className.replace('base-layer', 'reveal-layer');
+                revealLayer.setAttribute('aria-hidden', 'true');
+                revealLayer.innerHTML = baseLayer.innerHTML;
+                
+                // Append it to the card
+                card.appendChild(revealLayer);
 
-                // Attach Mouse Tracking
+                // 2. Attach mouse tracking
                 card.addEventListener('mousemove', (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -615,7 +593,7 @@
                     card.style.setProperty('--mask-y', `${y}px`);
                 });
 
-                // Reset position when leaving
+                // 3. Move mask away smoothly when mouse leaves
                 card.addEventListener('mouseleave', () => {
                     card.style.setProperty('--mask-x', `-1000px`);
                     card.style.setProperty('--mask-y', `-1000px`);
