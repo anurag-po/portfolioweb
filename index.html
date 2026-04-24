@@ -34,11 +34,6 @@
             --reveal-card-text: #ffffff;
             --reveal-card-highlight: #000000;
             --reveal-card-tag-bg: rgba(255, 255, 255, 0.2);
-
-            /* Global Reveal Layer Colors (Spotlight outside cards) */
-            --global-bg: #050505;
-            --global-nav-bg: rgba(0, 0, 0, 0.9);
-            --global-logo-highlight: #ffffff;
         }
 
         /* === DARK MODE OVERRIDES === */
@@ -56,11 +51,6 @@
             --reveal-card-text: #000000;
             --reveal-card-highlight: #ffffff;
             --reveal-card-tag-bg: rgba(0, 0, 0, 0.15);
-
-            /* Global Reveal Layer Colors (Spotlight outside cards) */
-            --global-bg: #ffffff;
-            --global-nav-bg: rgba(255, 255, 255, 0.9);
-            --global-logo-highlight: #000000;
         }
 
         /* === RESET & BASE === */
@@ -78,6 +68,7 @@
             line-height: 1.6;
             overflow-x: hidden;
             transition: background-color 0.3s ease, color 0.3s ease;
+            cursor: none; /* Hide default cursor globally */
         }
 
         /* Sci-Fi Grid Background */
@@ -98,12 +89,39 @@
         }
 
         ::selection { background: var(--red); color: #fff; }
-        a { text-decoration: none; color: inherit; }
+        a, button { text-decoration: none; color: inherit; cursor: none; }
 
         /* === TYPOGRAPHY === */
         h1, h2, h3, h4 { text-transform: uppercase; letter-spacing: -0.02em; line-height: 1.1; }
         .highlight { color: var(--red); transition: color 0.3s ease; }
         .mono { font-family: var(--font-mono); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em; }
+
+        /* === CUSTOM CURSOR BALL === */
+        .cursor-ball {
+            position: fixed;
+            top: 0; left: 0;
+            width: 12px; height: 12px;
+            background-color: var(--red);
+            border-radius: 50%;
+            pointer-events: none; /* Let clicks pass through */
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s ease, height 0.2s ease, background-color 0.2s ease, border 0.2s ease, opacity 0.3s ease;
+            box-shadow: 0 0 10px var(--red-glow);
+        }
+
+        /* Hover State for the Custom Cursor */
+        .cursor-ball.hovering {
+            width: 45px; height: 45px;
+            background-color: rgba(223, 0, 36, 0.1);
+            border: 2px solid var(--red);
+        }
+
+        /* Hidden State when inside Mask Cards */
+        .cursor-ball.hidden {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.5);
+        }
 
         /* === NAVIGATION === */
         nav {
@@ -120,22 +138,20 @@
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        /* For Dark Mode semi-transparent nav fallback since rgba with var needs extraction, handled simply here */
         [data-theme="dark"] nav { background: rgba(5, 5, 5, 0.9); }
         [data-theme="light"] nav { background: rgba(255, 255, 255, 0.9); }
 
-        .logo { font-size: 1.5rem; font-weight: 700; text-transform: uppercase; }
+        .logo { font-size: 1.5rem; font-weight: 700; text-transform: uppercase; transition: color 0.3s ease; }
+        .logo:hover { color: var(--red); }
+        .logo:hover .highlight { color: var(--text); } /* Invert the dot on hover */
+        
         .nav-links { display: flex; gap: 2rem; list-style: none; }
         .nav-links a { font-weight: 600; font-size: 0.9rem; transition: color 0.3s ease; }
         .nav-links a:hover { color: var(--red); }
         
         .theme-btn {
-            background: none;
-            border: none;
-            color: var(--text);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: color 0.3s ease, transform 0.3s ease;
+            background: none; border: none; color: var(--text);
+            font-size: 1.2rem; transition: color 0.3s ease, transform 0.3s ease;
         }
         .theme-btn:hover { color: var(--red); transform: scale(1.1); }
 
@@ -153,12 +169,15 @@
             position: relative;
             background: var(--bg);
             border: 2px solid var(--text);
-            overflow: hidden; cursor: default;
+            overflow: hidden; 
+            cursor: default; /* Bring normal cursor back inside cards */
             box-shadow: 8px 8px 0px rgba(0,0,0,0.1);
             transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
             --mask-size: 40px; --mask-x: -100px; --mask-y: -100px;
         }
         
+        .mask-card a, .mask-card button { cursor: pointer; } /* Ensure pointers work in cards */
+
         [data-theme="dark"] .mask-card { box-shadow: 8px 8px 0px rgba(255,255,255,0.05); }
 
         .mask-card:hover {
@@ -176,9 +195,7 @@
 
         .reveal-layer {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 2;
-            padding: 3rem;
-            background: var(--red);
-            color: var(--reveal-card-text);
+            padding: 3rem; background: var(--red); color: var(--reveal-card-text);
             pointer-events: none; display: flex; flex-direction: column; justify-content: center;
             
             -webkit-mask-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOUQ5RDkiLz4KPC9zdmc+Cg==');
@@ -198,34 +215,6 @@
         .reveal-layer p { color: var(--reveal-card-text); opacity: 0.9; }
         .reveal-layer input, .reveal-layer textarea { border-color: var(--reveal-card-text); color: var(--reveal-card-text); }
 
-        /* === GLOBAL REVEAL SPOTLIGHT (Outside sections) === */
-        #global-reveal-layer {
-            position: absolute; inset: 0; z-index: 9999; pointer-events: none; overflow: hidden;
-            
-            /* Dynamic Global Spotlight Background */
-            background-color: var(--global-bg);
-            background-image: 
-                linear-gradient(to right, rgba(223, 0, 36, 0.15) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(223, 0, 36, 0.15) 1px, transparent 1px);
-            background-size: 40px 40px;
-            
-            -webkit-mask-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOUQ5RDkiLz4KPC9zdmc+Cg==');
-            mask-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOUQ5RDkiLz4KPC9zdmc+Cg==');
-            -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-            -webkit-mask-size: var(--mask-size, 400px) var(--mask-size, 400px); mask-size: var(--mask-size, 400px) var(--mask-size, 400px);
-            -webkit-mask-position: calc(var(--pageX) - var(--mask-size)/2) calc(var(--pageY) - var(--mask-size)/2);
-            mask-position: calc(var(--pageX) - var(--mask-size)/2) calc(var(--pageY) - var(--mask-size)/2);
-            
-            opacity: 1; transition: opacity 0.3s ease, mask-size 0.3s ease, -webkit-mask-size 0.3s ease, background-color 0.3s ease;
-        }
-
-        #global-reveal-layer * { color: var(--red) !important; border-color: var(--red) !important; }
-        #global-reveal-layer nav { background: var(--global-nav-bg) !important; backdrop-filter: blur(10px); }
-        #global-reveal-layer .logo .highlight { color: var(--global-logo-highlight) !important; }
-        #global-reveal-layer .mask-card { visibility: hidden !important; }
-
-        body.card-hovered #global-reveal-layer { opacity: 0; --mask-size: 0px; }
-
         /* === HERO SECTION OVERRIDES === */
         #home .mask-card { padding: 0; }
         .base-layer.hero-layout, .reveal-layer.hero-layout {
@@ -240,13 +229,11 @@
         .hero-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
         .base-layer .hero-image-wrapper {
-            border: 4px solid var(--card-border-base);
-            box-shadow: -15px 15px 0px var(--card-border-base);
+            border: 4px solid var(--card-border-base); box-shadow: -15px 15px 0px var(--card-border-base);
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .reveal-layer .hero-image-wrapper {
-            border: 4px solid var(--card-border-reveal) !important;
-            box-shadow: -15px 15px 0px var(--card-border-reveal) !important;
+            border: 4px solid var(--card-border-reveal) !important; box-shadow: -15px 15px 0px var(--card-border-reveal) !important;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
@@ -254,8 +241,7 @@
         .btn-group { display: flex; gap: 1rem; margin-top: 1rem; }
         .btn {
             padding: 1rem 2rem; font-family: var(--font-mono); font-weight: 600; text-transform: uppercase;
-            border: 2px solid var(--text); background: transparent; color: var(--text); cursor: pointer;
-            position: relative; overflow: hidden; transition: all 0.3s ease;
+            border: 2px solid var(--text); background: transparent; color: var(--text); position: relative; overflow: hidden; transition: all 0.3s ease;
         }
         .btn::after {
             content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 0%;
@@ -292,182 +278,184 @@
             .base-layer.hero-layout, .reveal-layer.hero-layout { grid-template-columns: 1fr; gap: 2rem; }
             .hero-title { font-size: 3rem; }
             .contact-grid { grid-template-columns: 1fr; }
+            .cursor-ball { display: none; } /* Hide custom cursor on mobile */
+            body { cursor: auto; } /* Restore default cursor on mobile */
         }
     </style>
 </head>
 <body>
 
-    <div id="base-content">
-        <nav>
-            <div class="logo">Anurag<span class="highlight">.</span></div>
-            <ul class="nav-links mono">
-                <li><a href="#home">[ Home ]</a></li>
-                <li><a href="#projects">[ Projects ]</a></li>
-                <li><a href="#contact">[ Contact ]</a></li>
-            </ul>
-            <div class="nav-actions">
-                <button class="theme-btn" aria-label="Toggle Dark Mode">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
+    <div class="cursor-ball" id="cursor-ball"></div>
+
+    <nav>
+        <a href="#home" class="logo">Anurag<span class="highlight">.</span></a>
+        <ul class="nav-links mono">
+            <li><a href="#home" class="hover-target">[ Home ]</a></li>
+            <li><a href="#projects" class="hover-target">[ Projects ]</a></li>
+            <li><a href="#contact" class="hover-target">[ Contact ]</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="theme-btn hover-target" aria-label="Toggle Dark Mode">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="home" class="section-container">
+            <div class="mask-card">
+                <div class="base-layer hero-layout">
+                    <div class="hero-text">
+                        <div class="mono highlight">> B.Tech CSE Student @ GCET</div>
+                        <h1 class="hero-title">Hi, I'm <br><span class="highlight">Anurag Puthiyaveetil</span></h1>
+                        <p class="hero-subtitle">
+                            I specialize in building robust, modern web applications and powerful desktop utilities. With a keen eye for sleek design and a strong foundation in technologies ranging from React and Vanilla JS to Python and Electron, I love turning complex problems into elegant, user-centric solutions.
+                        </p>
+                        <div class="btn-group">
+                            <a href="#projects" class="btn btn-primary hover-target">View My Work</a>
+                            <a href="#contact" class="btn hover-target">Get In Touch</a>
+                        </div>
+                    </div>
+                    <div class="hero-image-wrapper">
+                        <img src="image.png" alt="Anurag P.O.">
+                    </div>
+                </div>
             </div>
-        </nav>
+        </section>
 
-        <main>
-            <section id="home" class="section-container">
+        <section id="projects" class="section-container">
+            <div class="section-header">
+                <h2>Selected <span class="highlight">Projects</span></h2>
+                <p class="mono">> SYSTEM.QUERY(RECENT_WORKS)</p>
+            </div>
+
+            <div class="projects-grid">
                 <div class="mask-card">
-                    <div class="base-layer hero-layout">
-                        <div class="hero-text">
-                            <div class="mono highlight">> B.Tech CSE Student @ GCET</div>
-                            <h1 class="hero-title">Hi, I'm <br><span class="highlight">Anurag Puthiyaveetil</span></h1>
-                            <p class="hero-subtitle">
-                                I specialize in building robust, modern web applications and powerful desktop utilities. With a keen eye for sleek design and a strong foundation in technologies ranging from React and Vanilla JS to Python and Electron, I love turning complex problems into elegant, user-centric solutions.
-                            </p>
-                            <div class="btn-group">
-                                <a href="#projects" class="btn btn-primary">View My Work</a>
-                                <a href="#contact" class="btn">Get In Touch</a>
-                            </div>
+                    <div class="base-layer">
+                        <div class="project-meta">
+                            <span class="project-tag">Desktop App</span>
+                            <span class="project-tag">Electron</span>
+                            <span class="project-tag">Node.js</span>
                         </div>
-                        <div class="hero-image-wrapper">
-                            <img src="image.png" alt="Anurag P.O.">
+                        <h3 class="project-title">Nexlyra Browser</h3>
+                        <p>A keyboard-centric productivity browser designed to keep you in the flow. Instead of traditional tabs, it utilizes a "Command Palette" architecture powered by real-time heuristic intent detection that intelligently routes keystrokes instantly. Features a frameless window design, secure IPC bridges, OS-level shortcut interception, and an immersive "Deep Dark" UI.</p>
+                        <div class="project-links">
+                            <a href="https://github.com/anurag-po/nexlyra-browser" target="_blank" class="hover-target"><i class="fa-brands fa-github"></i> Source Code</a>
                         </div>
                     </div>
-                </div>
-            </section>
-
-            <section id="projects" class="section-container">
-                <div class="section-header">
-                    <h2>Selected <span class="highlight">Projects</span></h2>
-                    <p class="mono">> SYSTEM.QUERY(RECENT_WORKS)</p>
-                </div>
-
-                <div class="projects-grid">
-                    <div class="mask-card">
-                        <div class="base-layer">
-                            <div class="project-meta">
-                                <span class="project-tag">Desktop App</span>
-                                <span class="project-tag">Electron</span>
-                                <span class="project-tag">Node.js</span>
-                            </div>
-                            <h3 class="project-title">Nexlyra Browser</h3>
-                            <p>A keyboard-centric productivity browser designed to keep you in the flow. Instead of traditional tabs, it utilizes a "Command Palette" architecture powered by real-time heuristic intent detection that intelligently routes keystrokes instantly. Features a frameless window design, secure IPC bridges, OS-level shortcut interception, and an immersive "Deep Dark" UI.</p>
-                            <div class="project-links">
-                                <a href="https://github.com/anurag-po/nexlyra-browser" target="_blank"><i class="fa-brands fa-github"></i> Source Code</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mask-card">
-                        <div class="base-layer">
-                            <div class="project-meta">
-                                <span class="project-tag">Web App</span>
-                                <span class="project-tag">React</span>
-                                <span class="project-tag">Supabase</span>
-                                <span class="project-tag">TailwindCSS</span>
-                            </div>
-                            <h3 class="project-title">Job Board Portal</h3>
-                            <p>A comprehensive employment platform tailored for seamless interactions between employers and candidates. Features role-based dashboards, secure Google OAuth authentication backed by Supabase, and dynamic profile cards. Implements advanced file-sharing functionalities enabling candidates to efficiently share resources.</p>
-                            <div class="project-links">
-                                <a href="https://codsoft-ivory.vercel.app" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live Preview</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mask-card">
-                        <div class="base-layer">
-                            <div class="project-meta">
-                                <span class="project-tag">Python App</span>
-                                <span class="project-tag">Algorithms</span>
-                                <span class="project-tag">Data Analysis</span>
-                            </div>
-                            <h3 class="project-title">Space & Budget Optimizer</h3>
-                            <p>An intelligent Python application designed to assist users in optimizing home furniture arrangements. It takes structural constraints and computes the optimal combination of materials and dimensions for bookshelves or cabinets. It delivers real-time comparative analytics on pricing across different designs to maximize utility.</p>
-                            <div class="project-links">
-                                <a href="#"><i class="fa-solid fa-code"></i> Algorithm Showcase</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mask-card">
-                        <div class="base-layer">
-                            <div class="project-meta">
-                                <span class="project-tag">Desktop App</span>
-                                <span class="project-tag">Python</span>
-                                <span class="project-tag">PyQt</span>
-                                <span class="project-tag">SymPy</span>
-                            </div>
-                            <h3 class="project-title">Scientific Calculator</h3>
-                            <p>A robust Python desktop application serving as an all-in-one computational suite. Moving far beyond basic arithmetic, it encompasses advanced mathematical capabilities including complex calculus problem-solving and rapid multi-dimensional matrix operations. Powered by a responsive PyQt GUI and robust symbolic computing libraries.</p>
-                            <div class="project-links">
-                                <a href="#"><i class="fa-solid fa-calculator"></i> View Details</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="contact" class="section-container">
-                <div class="section-header">
-                    <h2>Let's <span class="highlight">Connect</span></h2>
-                    <p class="mono">> INIT_COMMUNICATION_PROTOCOL()</p>
                 </div>
 
                 <div class="mask-card">
                     <div class="base-layer">
-                        <div class="contact-grid">
-                            <div class="contact-info-wrap">
-                                <div class="info-item">
-                                    <i class="fa-solid fa-envelope"></i>
-                                    <div>
-                                        <div class="mono">EMAIL_ADDRESS</div>
-                                        <a href="mailto:anuragpo393@gmail.com">anuragpo393@gmail.com</a>
-                                    </div>
-                                </div>
-                                <div class="info-item">
-                                    <i class="fa-solid fa-phone"></i>
-                                    <div>
-                                        <div class="mono">SECURE_LINE</div>
-                                        <a href="tel:+917863086776">+91 7863 086 776</a>
-                                    </div>
-                                </div>
-                                <div class="info-item">
-                                    <i class="fa-brands fa-github"></i>
-                                    <div>
-                                        <div class="mono">GIT_REPOSITORY</div>
-                                        <a href="https://github.com/anurag-po" target="_blank">github.com/anurag-po</a>
-                                    </div>
-                                </div>
-                                <div class="info-item">
-                                    <i class="fa-brands fa-linkedin"></i>
-                                    <div>
-                                        <div class="mono">PROFESSIONAL_NETWORK</div>
-                                        <a href="https://linkedin.com/in/anurag-po" target="_blank">linkedin.com/in/anurag-po</a>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <form class="contact-form" onsubmit="event.preventDefault();">
-                                <div class="form-group">
-                                    <input type="text" placeholder="[ ENTER_NAME ]" required>
-                                </div>
-                                <div class="form-group">
-                                    <input type="email" placeholder="[ ENTER_EMAIL ]" required>
-                                </div>
-                                <div class="form-group">
-                                    <textarea rows="5" placeholder="[ ENTER_TRANSMISSION_DATA ]" required></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Transmit Signal</button>
-                            </form>
+                        <div class="project-meta">
+                            <span class="project-tag">Web App</span>
+                            <span class="project-tag">React</span>
+                            <span class="project-tag">Supabase</span>
+                            <span class="project-tag">TailwindCSS</span>
+                        </div>
+                        <h3 class="project-title">Job Board Portal</h3>
+                        <p>A comprehensive employment platform tailored for seamless interactions between employers and candidates. Features role-based dashboards, secure Google OAuth authentication backed by Supabase, and dynamic profile cards. Implements advanced file-sharing functionalities enabling candidates to efficiently share resources.</p>
+                        <div class="project-links">
+                            <a href="https://codsoft-ivory.vercel.app" target="_blank" class="hover-target"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live Preview</a>
                         </div>
                     </div>
                 </div>
-            </section>
-        </main>
 
-        <footer>
-            <div class="logo">Anurag<span class="highlight">.</span></div>
-            <div class="mono">© 2026 SYS. ALL RIGHTS RESERVED.</div>
-        </footer>
-    </div>
+                <div class="mask-card">
+                    <div class="base-layer">
+                        <div class="project-meta">
+                            <span class="project-tag">Python App</span>
+                            <span class="project-tag">Algorithms</span>
+                            <span class="project-tag">Data Analysis</span>
+                        </div>
+                        <h3 class="project-title">Space & Budget Optimizer</h3>
+                        <p>An intelligent Python application designed to assist users in optimizing home furniture arrangements. It takes structural constraints and computes the optimal combination of materials and dimensions for bookshelves or cabinets. It delivers real-time comparative analytics on pricing across different designs to maximize utility.</p>
+                        <div class="project-links">
+                            <a href="#" class="hover-target"><i class="fa-solid fa-code"></i> Algorithm Showcase</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mask-card">
+                    <div class="base-layer">
+                        <div class="project-meta">
+                            <span class="project-tag">Desktop App</span>
+                            <span class="project-tag">Python</span>
+                            <span class="project-tag">PyQt</span>
+                            <span class="project-tag">SymPy</span>
+                        </div>
+                        <h3 class="project-title">Scientific Calculator</h3>
+                        <p>A robust Python desktop application serving as an all-in-one computational suite. Moving far beyond basic arithmetic, it encompasses advanced mathematical capabilities including complex calculus problem-solving and rapid multi-dimensional matrix operations. Powered by a responsive PyQt GUI and robust symbolic computing libraries.</p>
+                        <div class="project-links">
+                            <a href="#" class="hover-target"><i class="fa-solid fa-calculator"></i> View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section-container">
+            <div class="section-header">
+                <h2>Let's <span class="highlight">Connect</span></h2>
+                <p class="mono">> INIT_COMMUNICATION_PROTOCOL()</p>
+            </div>
+
+            <div class="mask-card">
+                <div class="base-layer">
+                    <div class="contact-grid">
+                        <div class="contact-info-wrap">
+                            <div class="info-item">
+                                <i class="fa-solid fa-envelope"></i>
+                                <div>
+                                    <div class="mono">EMAIL_ADDRESS</div>
+                                    <a href="mailto:anuragpo393@gmail.com" class="hover-target">anuragpo393@gmail.com</a>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fa-solid fa-phone"></i>
+                                <div>
+                                    <div class="mono">SECURE_LINE</div>
+                                    <a href="tel:+917863086776" class="hover-target">+91 7863 086 776</a>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fa-brands fa-github"></i>
+                                <div>
+                                    <div class="mono">GIT_REPOSITORY</div>
+                                    <a href="https://github.com/anurag-po" target="_blank" class="hover-target">github.com/anurag-po</a>
+                                </div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fa-brands fa-linkedin"></i>
+                                <div>
+                                    <div class="mono">PROFESSIONAL_NETWORK</div>
+                                    <a href="https://linkedin.com/in/anurag-po" target="_blank" class="hover-target">linkedin.com/in/anurag-po</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form class="contact-form" onsubmit="event.preventDefault();">
+                            <div class="form-group">
+                                <input type="text" placeholder="[ ENTER_NAME ]" required class="hover-target">
+                            </div>
+                            <div class="form-group">
+                                <input type="email" placeholder="[ ENTER_EMAIL ]" required class="hover-target">
+                            </div>
+                            <div class="form-group">
+                                <textarea rows="5" placeholder="[ ENTER_TRANSMISSION_DATA ]" required class="hover-target"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary hover-target">Transmit Signal</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="logo">Anurag<span class="highlight">.</span></div>
+        <div class="mono">© 2026 SYS. ALL RIGHTS RESERVED.</div>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -485,7 +473,6 @@
             }
             updateThemeIcons();
 
-            // Use event delegation for theme buttons (to catch cloned buttons easily)
             document.addEventListener('click', (e) => {
                 const btn = e.target.closest('.theme-btn');
                 if (btn) {
@@ -498,45 +485,40 @@
             });
 
             // ==============================================
-            // 1. SETUP GLOBAL SPOTLIGHT (Outside Cards)
+            // 1. CUSTOM CURSOR LOGIC
             // ==============================================
-            const baseContent = document.getElementById('base-content');
+            const cursorBall = document.getElementById('cursor-ball');
             
-            const globalLayer = document.createElement('div');
-            globalLayer.id = 'global-reveal-layer';
-            globalLayer.setAttribute('aria-hidden', 'true');
-            globalLayer.innerHTML = baseContent.innerHTML;
-            document.body.appendChild(globalLayer);
-
-            const clonedNav = globalLayer.querySelector('nav');
-            
+            // Move the custom cursor
             document.addEventListener('mousemove', (e) => {
-                globalLayer.style.setProperty('--pageX', `${e.pageX}px`);
-                globalLayer.style.setProperty('--pageY', `${e.pageY}px`);
+                cursorBall.style.left = `${e.clientX}px`;
+                cursorBall.style.top = `${e.clientY}px`;
             });
 
-            window.addEventListener('scroll', () => {
-                if (clonedNav) {
-                    clonedNav.style.transform = `translateY(${window.scrollY}px)`;
-                }
-            }, { passive: true });
+            // Make the cursor ball expand when hovering over links/buttons
+            const hoverTargets = document.querySelectorAll('.hover-target, .logo');
+            hoverTargets.forEach(target => {
+                target.addEventListener('mouseenter', () => cursorBall.classList.add('hovering'));
+                target.addEventListener('mouseleave', () => cursorBall.classList.remove('hovering'));
+            });
 
             // ==============================================
-            // 2. SETUP CARD SPOTLIGHTS & HOVER TRANSITIONS
+            // 2. SETUP CARD SPOTLIGHTS
             // ==============================================
-            const maskCards = document.querySelectorAll('#base-content .mask-card');
-            const body = document.body;
+            const maskCards = document.querySelectorAll('.mask-card');
 
             maskCards.forEach(card => {
                 const baseLayer = card.querySelector('.base-layer');
                 if (!baseLayer) return;
 
+                // Clone base layer into reveal layer for internal card effect
                 const revealLayer = document.createElement('div');
                 revealLayer.className = baseLayer.className.replace('base-layer', 'reveal-layer');
                 revealLayer.setAttribute('aria-hidden', 'true');
                 revealLayer.innerHTML = baseLayer.innerHTML;
                 card.appendChild(revealLayer);
 
+                // Move the mask inside the card
                 card.addEventListener('mousemove', (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -546,12 +528,14 @@
                     card.style.setProperty('--mask-y', `${y}px`);
                 });
 
+                // Hide custom cursor ball when entering a mask card
                 card.addEventListener('mouseenter', () => {
-                    body.classList.add('card-hovered');
+                    cursorBall.classList.add('hidden');
                 });
 
+                // Show custom cursor ball and reset mask position when leaving
                 card.addEventListener('mouseleave', () => {
-                    body.classList.remove('card-hovered');
+                    cursorBall.classList.remove('hidden');
                     card.style.setProperty('--mask-x', `-1000px`);
                     card.style.setProperty('--mask-y', `-1000px`);
                 });
