@@ -32,11 +32,14 @@
         }
 
         body {
+            position: relative;
             font-family: var(--font-main);
             background-color: var(--bg);
             color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
+            /* Transition for global background */
+            transition: background-color 0.3s ease;
         }
 
         /* Sci-Fi Grid Background */
@@ -142,7 +145,7 @@
             font-size: 3rem;
         }
 
-        /* === MASK REVEAL COMPONENT === */
+        /* === INTERNAL CARD MASK COMPONENT === */
         .mask-card {
             position: relative;
             background: #fff;
@@ -152,7 +155,6 @@
             box-shadow: 8px 8px 0px rgba(0,0,0,0.1);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             
-            /* CSS Variables controlled by JS */
             --mask-size: 40px;
             --mask-x: -100px;
             --mask-y: -100px;
@@ -161,10 +163,9 @@
         .mask-card:hover {
             transform: translate(-4px, -4px);
             box-shadow: 12px 12px 0px var(--red-glow);
-            --mask-size: 400px; /* Expands on hover */
+            --mask-size: 400px;
         }
 
-        /* The Base Layer - Natively visible */
         .base-layer {
             position: relative;
             z-index: 1;
@@ -177,7 +178,6 @@
             justify-content: center;
         }
 
-        /* The Reveal Layer - Cloned by JS and masked */
         .reveal-layer {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -185,40 +185,89 @@
             padding: 3rem;
             background: var(--red);
             color: #ffffff;
-            pointer-events: none; /* Let mouse interact with base layer underneath */
+            pointer-events: none;
             display: flex;
             flex-direction: column;
             justify-content: center;
             
-            /* Safe Base64 SVG implementation for mask */
             -webkit-mask-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOUQ5RDkiLz4KPC9zdmc+Cg==');
             mask-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOUQ5RDkiLz4KPC9zdmc+Cg==');
             
             -webkit-mask-repeat: no-repeat;
             mask-repeat: no-repeat;
-            
             -webkit-mask-size: var(--mask-size) var(--mask-size);
             mask-size: var(--mask-size) var(--mask-size);
-            
             -webkit-mask-position: calc(var(--mask-x) - (var(--mask-size) / 2)) calc(var(--mask-y) - (var(--mask-size) / 2));
             mask-position: calc(var(--mask-x) - (var(--mask-size) / 2)) calc(var(--mask-y) - (var(--mask-size) / 2));
             
-            /* Smooth easing matching Framer Motion's "backOut" transition feeling */
             transition: mask-size 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
                         -webkit-mask-size 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        /* Override specific styles inside the reveal spotlight */
+        /* Card Reveal Layer Colors */
         .reveal-layer .highlight { color: #000000; }
         .reveal-layer .btn { border-color: #fff; color: #fff; }
         .reveal-layer .project-tag { background: rgba(255,255,255,0.2); border-color: #fff; color: #fff; }
         .reveal-layer .project-link { color: #fff; }
         .reveal-layer p { color: rgba(255, 255, 255, 0.9); }
+        .reveal-layer input, .reveal-layer textarea { border-color: #fff; color: #fff; }
+
+        /* === GLOBAL REVEAL SPOTLIGHT (Outside sections) === */
+        #global-reveal-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 9999;
+            pointer-events: none; /* Let clicks pass through to base */
+            overflow: hidden;
+            
+            /* Black Background, Red Grid inside Spotlight */
+            background-color: #050505;
+            background-image: 
+                linear-gradient(to right, rgba(223, 0, 36, 0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(223, 0, 36, 0.15) 1px, transparent 1px);
+            background-size: 40px 40px;
+            
+            /* Spotlight Tracking */
+            -webkit-mask-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOUQ5RDkiLz4KPC9zdmc+Cg==');
+            mask-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiNEOUQ5RDkiLz4KPC9zdmc+Cg==');
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: var(--mask-size, 400px) var(--mask-size, 400px);
+            mask-size: var(--mask-size, 400px) var(--mask-size, 400px);
+            -webkit-mask-position: calc(var(--pageX) - var(--mask-size)/2) calc(var(--pageY) - var(--mask-size)/2);
+            mask-position: calc(var(--pageX) - var(--mask-size)/2) calc(var(--pageY) - var(--mask-size)/2);
+            
+            opacity: 1;
+            transition: opacity 0.3s ease, mask-size 0.3s ease, -webkit-mask-size 0.3s ease;
+        }
+
+        /* Global Reveal Colors */
+        #global-reveal-layer * {
+            color: var(--red) !important;
+            border-color: var(--red) !important;
+        }
+        
+        #global-reveal-layer nav {
+            background: rgba(0, 0, 0, 0.9) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        #global-reveal-layer .logo .highlight {
+            color: #ffffff !important;
+        }
+
+        #global-reveal-layer .mask-card {
+            visibility: hidden !important; /* Hide cards entirely from the global spotlight clone */
+        }
+
+        /* FADE OUT GLOBAL SPOTLIGHT WHEN HOVERING A CARD */
+        body.card-hovered #global-reveal-layer {
+            opacity: 0;
+            --mask-size: 0px; /* Shrink away */
+        }
 
         /* === HERO SECTION OVERRIDES === */
-        #home .mask-card {
-            padding: 0;
-        }
+        #home .mask-card { padding: 0; }
 
         .base-layer.hero-layout, .reveal-layer.hero-layout {
             min-height: 75vh;
@@ -228,12 +277,7 @@
             gap: 4rem;
         }
 
-        .hero-text {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
+        .hero-text { display: flex; flex-direction: column; gap: 1.5rem; }
         .hero-title { font-size: 4.5rem; }
         .hero-subtitle { font-size: 1.2rem; font-weight: 400; }
 
@@ -245,31 +289,20 @@
             background: #fff;
             overflow: hidden;
         }
+        .hero-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-        .hero-image-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* FRAME LOGIC: Red on Base, Black on Reveal */
+        /* Frame Logic */
         .base-layer .hero-image-wrapper {
             border: 4px solid var(--red);
             box-shadow: -15px 15px 0px var(--red);
         }
-
         .reveal-layer .hero-image-wrapper {
-            border: 4px solid #000000;
-            box-shadow: -15px 15px 0px #000000;
+            border: 4px solid #000000 !important;
+            box-shadow: -15px 15px 0px #000000 !important;
         }
 
         /* Buttons */
-        .btn-group {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
+        .btn-group { display: flex; gap: 1rem; margin-top: 1rem; }
         .btn {
             padding: 1rem 2rem;
             font-family: var(--font-mono);
@@ -283,114 +316,36 @@
             overflow: hidden;
             transition: all 0.3s ease;
         }
-
         .btn::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; width: 100%; height: 0%;
-            background: var(--text);
-            transition: height 0.3s ease;
-            z-index: -1;
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 0%;
+            background: var(--text); transition: height 0.3s ease; z-index: -1;
         }
-
         .btn:hover::after { height: 100%; }
         .btn:hover { color: #fff; }
-
-        .btn-primary {
-            background: var(--red);
-            color: #fff;
-            border-color: var(--red);
-        }
+        
+        .btn-primary { background: var(--red); color: #fff; border-color: var(--red); }
         .btn-primary::after { background: #000; }
 
         /* === PROJECTS SECTION === */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-        }
-
-        .project-meta {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-
-        .project-tag {
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            padding: 0.25rem 0.75rem;
-            border: 1px solid var(--text);
-            border-radius: 50px;
-        }
-
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; }
+        .project-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .project-tag { font-family: var(--font-mono); font-size: 0.75rem; padding: 0.25rem 0.75rem; border: 1px solid var(--text); border-radius: 50px; }
         .project-title { font-size: 2rem; margin-bottom: 1rem; }
         .project-links { margin-top: 2rem; font-family: var(--font-mono); font-weight: 600; }
-
-        .project-links a {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-bottom: 2px solid transparent;
-            padding-bottom: 0.2rem;
-            transition: border-color 0.3s ease;
-        }
-
+        .project-links a { display: inline-flex; align-items: center; gap: 0.5rem; border-bottom: 2px solid transparent; padding-bottom: 0.2rem; transition: border-color 0.3s ease; }
         .project-links a:hover { border-color: var(--red); }
 
         /* === CONTACT SECTION === */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.5fr;
-            gap: 4rem;
-        }
-
-        .contact-info-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
+        .contact-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 4rem; }
+        .contact-info-wrap { display: flex; flex-direction: column; gap: 1.5rem; }
+        .info-item { display: flex; align-items: center; gap: 1.5rem; font-size: 1.2rem; font-weight: 600; }
         .info-item i { font-size: 1.5rem; color: var(--red); }
-
-        .contact-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 1rem;
-            background: transparent;
-            border: 2px solid var(--text);
-            font-family: var(--font-mono);
-            color: var(--text);
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
+        .contact-form { display: flex; flex-direction: column; gap: 1.5rem; }
+        .form-group input, .form-group textarea { width: 100%; padding: 1rem; background: transparent; border: 2px solid var(--text); font-family: var(--font-mono); color: var(--text); outline: none; transition: border-color 0.3s ease; }
         .form-group input:focus, .form-group textarea:focus { border-color: var(--red); }
 
         /* === FOOTER === */
-        footer {
-            border-top: 2px solid var(--text);
-            padding: 2rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: var(--font-mono);
-            background: #fff;
-        }
+        footer { border-top: 2px solid var(--text); padding: 2rem 5%; display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); background: #fff; }
 
         @media (max-width: 900px) {
             .base-layer.hero-layout, .reveal-layer.hero-layout { grid-template-columns: 1fr; gap: 2rem; }
@@ -401,189 +356,221 @@
 </head>
 <body>
 
-    <nav>
-        <div class="logo">Anurag<span class="highlight">.</span></div>
-        <ul class="nav-links mono">
-            <li><a href="#home">[ Home ]</a></li>
-            <li><a href="#projects">[ Projects ]</a></li>
-            <li><a href="#contact">[ Contact ]</a></li>
-        </ul>
-    </nav>
+    <div id="base-content">
+        <nav>
+            <div class="logo">Anurag<span class="highlight">.</span></div>
+            <ul class="nav-links mono">
+                <li><a href="#home">[ Home ]</a></li>
+                <li><a href="#projects">[ Projects ]</a></li>
+                <li><a href="#contact">[ Contact ]</a></li>
+            </ul>
+        </nav>
 
-    <main>
-        <section id="home" class="section-container">
-            <div class="mask-card">
-                <div class="base-layer hero-layout">
-                    <div class="hero-text">
-                        <div class="mono highlight">> B.Tech CSE Student @ GCET</div>
-                        <h1 class="hero-title">Hi, I'm <br><span class="highlight">Anurag Puthiyaveetil</span></h1>
-                        <p class="hero-subtitle">
-                            I specialize in building robust, modern web applications and powerful desktop utilities. With a keen eye for sleek design and a strong foundation in technologies ranging from React and Vanilla JS to Python and Electron, I love turning complex problems into elegant, user-centric solutions.
-                        </p>
-                        <div class="btn-group">
-                            <a href="#projects" class="btn btn-primary">View My Work</a>
-                            <a href="#contact" class="btn">Get In Touch</a>
+        <main>
+            <section id="home" class="section-container">
+                <div class="mask-card">
+                    <div class="base-layer hero-layout">
+                        <div class="hero-text">
+                            <div class="mono highlight">> B.Tech CSE Student @ GCET</div>
+                            <h1 class="hero-title">Hi, I'm <br><span class="highlight">Anurag Puthiyaveetil</span></h1>
+                            <p class="hero-subtitle">
+                                I specialize in building robust, modern web applications and powerful desktop utilities. With a keen eye for sleek design and a strong foundation in technologies ranging from React and Vanilla JS to Python and Electron, I love turning complex problems into elegant, user-centric solutions.
+                            </p>
+                            <div class="btn-group">
+                                <a href="#projects" class="btn btn-primary">View My Work</a>
+                                <a href="#contact" class="btn">Get In Touch</a>
+                            </div>
+                        </div>
+                        <div class="hero-image-wrapper">
+                            <img src="image.png" alt="Anurag P.O.">
                         </div>
                     </div>
-                    <div class="hero-image-wrapper">
-                        <img src="image.png" alt="Anurag P.O.">
+                </div>
+            </section>
+
+            <section id="projects" class="section-container">
+                <div class="section-header">
+                    <h2>Selected <span class="highlight">Projects</span></h2>
+                    <p class="mono">> SYSTEM.QUERY(RECENT_WORKS)</p>
+                </div>
+
+                <div class="projects-grid">
+                    <div class="mask-card">
+                        <div class="base-layer">
+                            <div class="project-meta">
+                                <span class="project-tag">Desktop App</span>
+                                <span class="project-tag">Electron</span>
+                                <span class="project-tag">Node.js</span>
+                            </div>
+                            <h3 class="project-title">Nexlyra Browser</h3>
+                            <p>A keyboard-centric productivity browser designed to keep you in the flow. Instead of traditional tabs, it utilizes a "Command Palette" architecture powered by real-time heuristic intent detection that intelligently routes keystrokes instantly. Features a frameless window design, secure IPC bridges, OS-level shortcut interception, and an immersive "Deep Dark" UI.</p>
+                            <div class="project-links">
+                                <a href="https://github.com/anurag-po/nexlyra-browser" target="_blank"><i class="fa-brands fa-github"></i> Source Code</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mask-card">
+                        <div class="base-layer">
+                            <div class="project-meta">
+                                <span class="project-tag">Web App</span>
+                                <span class="project-tag">React</span>
+                                <span class="project-tag">Supabase</span>
+                                <span class="project-tag">TailwindCSS</span>
+                            </div>
+                            <h3 class="project-title">Job Board Portal</h3>
+                            <p>A comprehensive employment platform tailored for seamless interactions between employers and candidates. Features role-based dashboards, secure Google OAuth authentication backed by Supabase, and dynamic profile cards. Implements advanced file-sharing functionalities enabling candidates to efficiently share resources.</p>
+                            <div class="project-links">
+                                <a href="https://codsoft-ivory.vercel.app" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live Preview</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mask-card">
+                        <div class="base-layer">
+                            <div class="project-meta">
+                                <span class="project-tag">Python App</span>
+                                <span class="project-tag">Algorithms</span>
+                                <span class="project-tag">Data Analysis</span>
+                            </div>
+                            <h3 class="project-title">Space & Budget Optimizer</h3>
+                            <p>An intelligent Python application designed to assist users in optimizing home furniture arrangements. It takes structural constraints and computes the optimal combination of materials and dimensions for bookshelves or cabinets. It delivers real-time comparative analytics on pricing across different designs to maximize utility.</p>
+                            <div class="project-links">
+                                <a href="#"><i class="fa-solid fa-code"></i> Algorithm Showcase</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mask-card">
+                        <div class="base-layer">
+                            <div class="project-meta">
+                                <span class="project-tag">Desktop App</span>
+                                <span class="project-tag">Python</span>
+                                <span class="project-tag">PyQt</span>
+                                <span class="project-tag">SymPy</span>
+                            </div>
+                            <h3 class="project-title">Scientific Calculator</h3>
+                            <p>A robust Python desktop application serving as an all-in-one computational suite. Moving far beyond basic arithmetic, it encompasses advanced mathematical capabilities including complex calculus problem-solving and rapid multi-dimensional matrix operations. Powered by a responsive PyQt GUI and robust symbolic computing libraries.</p>
+                            <div class="project-links">
+                                <a href="#"><i class="fa-solid fa-calculator"></i> View Details</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="projects" class="section-container">
-            <div class="section-header">
-                <h2>Selected <span class="highlight">Projects</span></h2>
-                <p class="mono">> SYSTEM.QUERY(RECENT_WORKS)</p>
-            </div>
+            <section id="contact" class="section-container">
+                <div class="section-header">
+                    <h2>Let's <span class="highlight">Connect</span></h2>
+                    <p class="mono">> INIT_COMMUNICATION_PROTOCOL()</p>
+                </div>
 
-            <div class="projects-grid">
                 <div class="mask-card">
                     <div class="base-layer">
-                        <div class="project-meta">
-                            <span class="project-tag">Desktop App</span>
-                            <span class="project-tag">Electron</span>
-                            <span class="project-tag">Node.js</span>
-                        </div>
-                        <h3 class="project-title">Nexlyra Browser</h3>
-                        <p>A keyboard-centric productivity browser designed to keep you in the flow. Instead of traditional tabs, it utilizes a "Command Palette" architecture powered by real-time heuristic intent detection that intelligently routes keystrokes instantly. Features a frameless window design, secure IPC bridges, OS-level shortcut interception, and an immersive "Deep Dark" UI.</p>
-                        <div class="project-links">
-                            <a href="https://github.com/anurag-po/nexlyra-browser" target="_blank"><i class="fa-brands fa-github"></i> Source Code</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mask-card">
-                    <div class="base-layer">
-                        <div class="project-meta">
-                            <span class="project-tag">Web App</span>
-                            <span class="project-tag">React</span>
-                            <span class="project-tag">Supabase</span>
-                            <span class="project-tag">TailwindCSS</span>
-                        </div>
-                        <h3 class="project-title">Job Board Portal</h3>
-                        <p>A comprehensive employment platform tailored for seamless interactions between employers and candidates. Features role-based dashboards, secure Google OAuth authentication backed by Supabase, and dynamic profile cards. Implements advanced file-sharing functionalities enabling candidates to efficiently share resources.</p>
-                        <div class="project-links">
-                            <a href="https://codsoft-ivory.vercel.app" target="_blank"><i class="fa-solid fa-arrow-up-right-from-square"></i> Live Preview</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mask-card">
-                    <div class="base-layer">
-                        <div class="project-meta">
-                            <span class="project-tag">Python App</span>
-                            <span class="project-tag">Algorithms</span>
-                            <span class="project-tag">Data Analysis</span>
-                        </div>
-                        <h3 class="project-title">Space & Budget Optimizer</h3>
-                        <p>An intelligent Python application designed to assist users in optimizing home furniture arrangements. It takes structural constraints and computes the optimal combination of materials and dimensions for bookshelves or cabinets. It delivers real-time comparative analytics on pricing across different designs to maximize utility.</p>
-                        <div class="project-links">
-                            <a href="#"><i class="fa-solid fa-code"></i> Algorithm Showcase</a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mask-card">
-                    <div class="base-layer">
-                        <div class="project-meta">
-                            <span class="project-tag">Desktop App</span>
-                            <span class="project-tag">Python</span>
-                            <span class="project-tag">PyQt</span>
-                            <span class="project-tag">SymPy</span>
-                        </div>
-                        <h3 class="project-title">Scientific Calculator</h3>
-                        <p>A robust Python desktop application serving as an all-in-one computational suite. Moving far beyond basic arithmetic, it encompasses advanced mathematical capabilities including complex calculus problem-solving and rapid multi-dimensional matrix operations. Powered by a responsive PyQt GUI and robust symbolic computing libraries.</p>
-                        <div class="project-links">
-                            <a href="#"><i class="fa-solid fa-calculator"></i> View Details</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="section-container">
-            <div class="section-header">
-                <h2>Let's <span class="highlight">Connect</span></h2>
-                <p class="mono">> INIT_COMMUNICATION_PROTOCOL()</p>
-            </div>
-
-            <div class="mask-card">
-                <div class="base-layer">
-                    <div class="contact-grid">
-                        <div class="contact-info-wrap">
-                            <div class="info-item">
-                                <i class="fa-solid fa-envelope"></i>
-                                <div>
-                                    <div class="mono">EMAIL_ADDRESS</div>
-                                    <a href="mailto:anuragpo393@gmail.com">anuragpo393@gmail.com</a>
+                        <div class="contact-grid">
+                            <div class="contact-info-wrap">
+                                <div class="info-item">
+                                    <i class="fa-solid fa-envelope"></i>
+                                    <div>
+                                        <div class="mono">EMAIL_ADDRESS</div>
+                                        <a href="mailto:anuragpo393@gmail.com">anuragpo393@gmail.com</a>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <div>
+                                        <div class="mono">SECURE_LINE</div>
+                                        <a href="tel:+917863086776">+91 7863 086 776</a>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fa-brands fa-github"></i>
+                                    <div>
+                                        <div class="mono">GIT_REPOSITORY</div>
+                                        <a href="https://github.com/anurag-po" target="_blank">github.com/anurag-po</a>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fa-brands fa-linkedin"></i>
+                                    <div>
+                                        <div class="mono">PROFESSIONAL_NETWORK</div>
+                                        <a href="https://linkedin.com/in/anurag-po" target="_blank">linkedin.com/in/anurag-po</a>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="info-item">
-                                <i class="fa-solid fa-phone"></i>
-                                <div>
-                                    <div class="mono">SECURE_LINE</div>
-                                    <a href="tel:+917863086776">+91 7863 086 776</a>
-                                </div>
-                            </div>
-                            <div class="info-item">
-                                <i class="fa-brands fa-github"></i>
-                                <div>
-                                    <div class="mono">GIT_REPOSITORY</div>
-                                    <a href="https://github.com/anurag-po" target="_blank">github.com/anurag-po</a>
-                                </div>
-                            </div>
-                            <div class="info-item">
-                                <i class="fa-brands fa-linkedin"></i>
-                                <div>
-                                    <div class="mono">PROFESSIONAL_NETWORK</div>
-                                    <a href="https://linkedin.com/in/anurag-po" target="_blank">linkedin.com/in/anurag-po</a>
-                                </div>
-                            </div>
-                        </div>
 
-                        <form class="contact-form" onsubmit="event.preventDefault();">
-                            <div class="form-group">
-                                <input type="text" placeholder="[ ENTER_NAME ]" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="email" placeholder="[ ENTER_EMAIL ]" required>
-                            </div>
-                            <div class="form-group">
-                                <textarea rows="5" placeholder="[ ENTER_TRANSMISSION_DATA ]" required></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Transmit Signal</button>
-                        </form>
+                            <form class="contact-form" onsubmit="event.preventDefault();">
+                                <div class="form-group">
+                                    <input type="text" placeholder="[ ENTER_NAME ]" required>
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" placeholder="[ ENTER_EMAIL ]" required>
+                                </div>
+                                <div class="form-group">
+                                    <textarea rows="5" placeholder="[ ENTER_TRANSMISSION_DATA ]" required></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Transmit Signal</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    </main>
+            </section>
+        </main>
 
-    <footer>
-        <div class="logo">Anurag<span class="highlight">.</span></div>
-        <div class="mono">© 2026 SYS. ALL RIGHTS RESERVED.</div>
-    </footer>
+        <footer>
+            <div class="logo">Anurag<span class="highlight">.</span></div>
+            <div class="mono">© 2026 SYS. ALL RIGHTS RESERVED.</div>
+        </footer>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const maskCards = document.querySelectorAll('.mask-card');
+            // ==============================================
+            // 1. SETUP GLOBAL SPOTLIGHT (Outside Cards)
+            // ==============================================
+            const baseContent = document.getElementById('base-content');
+            
+            // Clone the entire base content for the global mask
+            const globalLayer = document.createElement('div');
+            globalLayer.id = 'global-reveal-layer';
+            globalLayer.setAttribute('aria-hidden', 'true');
+            globalLayer.innerHTML = baseContent.innerHTML;
+            document.body.appendChild(globalLayer);
+
+            // Handle the fixed navigation inside the cloned layer
+            const clonedNav = globalLayer.querySelector('nav');
+            
+            // Track mouse globally for the background spotlight
+            document.addEventListener('mousemove', (e) => {
+                globalLayer.style.setProperty('--pageX', `${e.pageX}px`);
+                globalLayer.style.setProperty('--pageY', `${e.pageY}px`);
+            });
+
+            // Simulate fixed positioning for the cloned Nav
+            window.addEventListener('scroll', () => {
+                if (clonedNav) {
+                    clonedNav.style.transform = `translateY(${window.scrollY}px)`;
+                }
+            }, { passive: true });
+
+            // ==============================================
+            // 2. SETUP CARD SPOTLIGHTS & HOVER TRANSITIONS
+            // ==============================================
+            const maskCards = document.querySelectorAll('#base-content .mask-card');
+            const body = document.body;
 
             maskCards.forEach(card => {
                 const baseLayer = card.querySelector('.base-layer');
                 if (!baseLayer) return;
 
-                // 1. Safely clone the base layer to create the reveal layer
+                // Clone base layer into reveal layer for internal card effect
                 const revealLayer = document.createElement('div');
                 revealLayer.className = baseLayer.className.replace('base-layer', 'reveal-layer');
                 revealLayer.setAttribute('aria-hidden', 'true');
                 revealLayer.innerHTML = baseLayer.innerHTML;
-                
-                // Append it to the card
                 card.appendChild(revealLayer);
 
-                // 2. Attach mouse tracking
+                // Track mouse inside the specific card
                 card.addEventListener('mousemove', (e) => {
                     const rect = card.getBoundingClientRect();
                     const x = e.clientX - rect.left;
@@ -593,8 +580,14 @@
                     card.style.setProperty('--mask-y', `${y}px`);
                 });
 
-                // 3. Move mask away smoothly when mouse leaves
+                // When entering a card, fade out the global background spotlight
+                card.addEventListener('mouseenter', () => {
+                    body.classList.add('card-hovered');
+                });
+
+                // When leaving a card, restore global spotlight and hide card spotlight
                 card.addEventListener('mouseleave', () => {
+                    body.classList.remove('card-hovered');
                     card.style.setProperty('--mask-x', `-1000px`);
                     card.style.setProperty('--mask-y', `-1000px`);
                 });
