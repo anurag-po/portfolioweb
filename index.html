@@ -225,16 +225,19 @@
         .hero-subtitle { font-size: 1.2rem; font-weight: 400; }
 
         /* Frame Logic tied to variables */
-        .hero-image-wrapper { position: relative; width: 100%; aspect-ratio: 4/5; background: var(--bg); overflow: hidden; }
+        .hero-image-wrapper { position: relative; width: 100%; aspect-ratio: 4/5; overflow: hidden; }
         .hero-image-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
         .base-layer .hero-image-wrapper {
+            background: var(--bg); /* Black in dark mode, White in light mode */
             border: 4px solid var(--card-border-base); box-shadow: -15px 15px 0px var(--card-border-base);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
         }
+        
         .reveal-layer .hero-image-wrapper {
+            background: transparent; /* Lets the red reveal layer show through! */
             border: 4px solid var(--card-border-reveal) !important; box-shadow: -15px 15px 0px var(--card-border-reveal) !important;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
         }
 
         /* Buttons */
